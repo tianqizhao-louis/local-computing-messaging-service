@@ -19,4 +19,4 @@ messages = Table(
     Column('message_body', String),
 )
 
-database = Database(DATABASE_URI)
+database = Database(DATABASE_URI, min_size=1, max_size=10, connection_options={'statement_cache_size': 0})
