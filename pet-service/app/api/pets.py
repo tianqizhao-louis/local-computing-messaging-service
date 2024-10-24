@@ -11,10 +11,12 @@ from app.api.models import (
 )
 from app.api import db_manager
 import uuid
+import os
 
 # from app.api.service import is_cast_present
 
 pets = APIRouter()
+URL_PREFIX = os.getenv("URL_PREFIX")
 
 
 @pets.post("/", response_model=PetOut, status_code=201)
@@ -39,7 +41,7 @@ async def create_pet(payload: PetIn, response: Response):
         breeder_id=payload.breeder_id,
         links=[
             Link(rel="self", href=pet_url),
-            Link(rel="collection", href="/pets/"),
+            Link(rel="collection", href=f"{URL_PREFIX}/pets/"),
         ],
     )
     return response_data
@@ -59,8 +61,8 @@ async def get_pets(params: PetFilterParams = Depends()):
             price=record["price"],
             breeder_id=record["breeder_id"],
             links=[
-                Link(rel="self", href=f"/pets/{record['id']}/"),
-                Link(rel="collection", href="/pets/"),
+                Link(rel="self", href=f"{URL_PREFIX}/pets/{record['id']}/"),
+                Link(rel="collection", href=f"{URL_PREFIX}/pets/"),
             ],
         )
         for record in db_records
@@ -68,14 +70,14 @@ async def get_pets(params: PetFilterParams = Depends()):
 
     # Add Link headers to paginate and return a collection link in response
     links = [
-        Link(rel="self", href="/pets/"),
-        Link(rel="collection", href="/pets/"),
+        Link(rel="self", href=f"{URL_PREFIX}/pets/"),
+        Link(rel="collection", href=f"{URL_PREFIX}/pets/"),
     ]
 
     if params.limit:
         next_offset = params.offset + params.limit
         links.append(
-            Link(rel="next", href=f"/pets/?limit={params.limit}&offset={next_offset}")
+            Link(rel="next", href=f"{URL_PREFIX}/pets/?limit={params.limit}&offset={next_offset}")
         )
 
     return PetListResponse(
@@ -98,8 +100,8 @@ async def get_pet(id: str):
         price=pet["price"],
         breeder_id=pet["breeder_id"],
         links=[
-            Link(rel="self", href=f"/pets/{id}/"),
-            Link(rel="collection", href="/pets/"),
+            Link(rel="self", href=f"{URL_PREFIX}/pets/{id}/"),
+            Link(rel="collection", href=f"{URL_PREFIX}/pets/"),
         ],
     )
     return response_data
@@ -126,8 +128,8 @@ async def update_pet(id: str, payload: PetUpdate):
         price=updated_pet_in_db["price"],
         breeder_id=updated_pet_in_db["breeder_id"],
         links=[
-            Link(rel="self", href=f"/pets/{id}/"),
-            Link(rel="collection", href="/pets/"),
+            Link(rel="self", href=f"{URL_PREFIX}/pets/{id}/"),
+            Link(rel="collection", href=f"{URL_PREFIX}/pets/"),
         ],
     )
     return response_data
@@ -156,4 +158,4 @@ async def delete_all_pets():
 
 
 def generate_pet_url(pet_id: str):
-    return f"/pets/{pet_id}/"
+    return f"{URL_PREFIX}/pets/{pet_id}/"

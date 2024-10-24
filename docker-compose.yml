@@ -10,7 +10,7 @@ services:
     environment:
       - DATABASE_URI=${DATABASE_URL}
       - PYTHONPATH=/app
-      # - CAST_SERVICE_HOST_URL=http://cast_service:8000/api/v1/casts/
+      - URL_PREFIX=http://localhost:8082/api/v1
     depends_on:
       - pet_db
 
