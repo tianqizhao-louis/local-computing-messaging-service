@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.pets import pets
-from app.api.db import metadata, database, engine
+from app.api.db import initialize_database, cleanup
 from app.api.middleware import LoggingMiddleware
 from contextlib import asynccontextmanager
 
@@ -9,18 +9,16 @@ from contextlib import asynccontextmanager
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup code: connect to the database
-    await database.connect()
+    await initialize_database()
     yield
     # Shutdown code: disconnect from the database
-    await database.disconnect()
+    await cleanup()
 
-
-metadata.create_all(engine)
 
 app = FastAPI(
-    openapi_url="/api/v1/pets/openapi.json", 
+    openapi_url="/api/v1/pets/openapi.json",
     docs_url="/api/v1/pets/docs",
-    lifespan=lifespan  # Use lifespan event handler
+    lifespan=lifespan,  # Use lifespan event handler
 )
 
 origins = [
