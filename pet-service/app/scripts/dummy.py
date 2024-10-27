@@ -3,7 +3,7 @@ import random
 import string
 
 # URL of your API endpoint for breeders and pets
-breeder_url = "http://localhost:8080/api/v1/breeders/"
+breeder_url = "http://34.72.253.184:8000/api/v1/breeders"
 pet_url = "http://localhost:8082/api/v1/pets"
 
 # Fetch the breeder IDs from the API
