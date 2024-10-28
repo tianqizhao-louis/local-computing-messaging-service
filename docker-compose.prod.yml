@@ -7,7 +7,7 @@ services:
     # volumes:
     #   - ./pet-service/:/app/
     ports:
-      - 8003:8000
+      - 8082:8000
     environment:
       - DATABASE_URI=${DATABASE_URL}
       - PYTHONPATH=/app
