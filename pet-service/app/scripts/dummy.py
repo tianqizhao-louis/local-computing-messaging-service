@@ -2,9 +2,13 @@ import requests
 import random
 import string
 
-# URL of your API endpoint for breeders and pets
-breeder_url = "http://34.72.253.184:8000/api/v1/breeders"
+# API endpoint for breeders and pets
+breeder_url = "http://localhost:8080/api/v1/breeders/"
 pet_url = "http://localhost:8082/api/v1/pets"
+
+# Dog CEO API for generating random dog image URLs
+dog_image_api = "https://dog.ceo/api/breeds/image/random"
+
 
 # Fetch the breeder IDs from the API
 def fetch_breeder_ids():
@@ -19,10 +23,26 @@ def fetch_breeder_ids():
         print(f"Failed to fetch breeders. Status Code: {response.status_code}")
         return []
 
+
+# Fetch a random dog image URL using the Dog CEO API
+def fetch_random_dog_image():
+    try:
+        response = requests.get(dog_image_api)
+        if response.status_code == 200:
+            data = response.json()
+            return data["message"]  # Return the image URL
+        else:
+            print(f"Failed to fetch dog image. Status Code: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"Error fetching dog image: {e}")
+        return None
+
+
 # Function to generate random dummy pet data
 def generate_dummy_pet(breeder_ids):
     pet_types = ['Dog', 'Cat', 'Bird', 'Rabbit', 'Fish', 'Hamster', 'Lizard', 'Snake', 'Turtle', 'Horse']
-    
+
     # Generate random pet name
     pet_name = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase, k=10))
 
@@ -35,12 +55,17 @@ def generate_dummy_pet(breeder_ids):
     # Randomly select a breeder ID
     breeder_id = random.choice(breeder_ids)
 
+    # Fetch a random image URL
+    image_url = fetch_random_dog_image()
+
     return {
         "name": pet_name,
         "type": pet_type,
         "price": price,
-        "breeder_id": breeder_id
+        "breeder_id": breeder_id,
+        "image_url": image_url
     }
+
 
 # Main function to fetch breeders and add dummy pets
 def create_dummy_pets():
@@ -55,13 +80,17 @@ def create_dummy_pets():
         dummy_pet = generate_dummy_pet(breeder_ids)
 
         # Sending the POST request to add the pet
-        response = requests.post(pet_url, json=dummy_pet)
+        if dummy_pet["image_url"]:  # Ensure the image URL is valid
+            response = requests.post(pet_url, json=dummy_pet)
 
-        # Checking if the request was successful
-        if response.status_code == 201:
-            print(f"Successfully added pet: {dummy_pet['name']}")
+            # Checking if the request was successful
+            if response.status_code == 201:
+                print(f"Successfully added pet: {dummy_pet['name']} with image URL: {dummy_pet['image_url']}")
+            else:
+                print(f"Failed to add pet: {dummy_pet['name']} - Status Code: {response.status_code}")
         else:
-            print(f"Failed to add pet: {dummy_pet['name']} - Status Code: {response.status_code}")
+            print(f"Skipping pet {dummy_pet['name']} due to missing image URL.")
+
 
 # Run the function to create dummy pets
 create_dummy_pets()

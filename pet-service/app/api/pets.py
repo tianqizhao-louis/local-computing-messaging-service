@@ -39,6 +39,7 @@ async def create_pet(payload: PetIn, response: Response):
         type=payload.type,
         price=payload.price,
         breeder_id=payload.breeder_id,
+        image_url=payload.image_url,  # Include image_url
         links=[
             Link(rel="self", href=pet_url),
             Link(rel="collection", href=f"{URL_PREFIX}/pets/"),
@@ -60,6 +61,7 @@ async def get_pets(params: PetFilterParams = Depends()):
             type=record["type"],
             price=record["price"],
             breeder_id=record["breeder_id"],
+            image_url=record["image_url"],  # Include image_url from the database
             links=[
                 Link(rel="self", href=f"{URL_PREFIX}/pets/{record['id']}/"),
                 Link(rel="collection", href=f"{URL_PREFIX}/pets/"),
@@ -99,6 +101,7 @@ async def get_pet(id: str):
         type=pet["type"],
         price=pet["price"],
         breeder_id=pet["breeder_id"],
+        image_url=pet["image_url"],  # Include image_url from the database
         links=[
             Link(rel="self", href=f"{URL_PREFIX}/pets/{id}/"),
             Link(rel="collection", href=f"{URL_PREFIX}/pets/"),
@@ -127,6 +130,7 @@ async def update_pet(id: str, payload: PetUpdate):
         type=updated_pet_in_db["type"],
         price=updated_pet_in_db["price"],
         breeder_id=updated_pet_in_db["breeder_id"],
+        image_url=updated_pet_in_db["image_url"],  # Include image_url
         links=[
             Link(rel="self", href=f"{URL_PREFIX}/pets/{id}/"),
             Link(rel="collection", href=f"{URL_PREFIX}/pets/"),

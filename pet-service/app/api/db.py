@@ -9,7 +9,7 @@ from sqlalchemy import (
     String,
     Table,
     ARRAY,
-    Float
+    Float,
 )
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
@@ -47,6 +47,7 @@ engine = create_async_engine(
 
 metadata = MetaData()
 
+# Define the 'pets' table with the new 'image_url' column
 pets = Table(
     "pets",
     metadata,
@@ -55,7 +56,9 @@ pets = Table(
     Column("type", String(50)),
     Column("price", Float),
     Column("breeder_id", String(36)),
+    Column("image_url", String(255)),  # New column for the image URL
 )
+
 # Setup databases instance with the same connection parameters
 database = Database(
     DATABASE_URI,

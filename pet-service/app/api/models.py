@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import List, Optional
+from typing import Optional, List
+from pydantic import BaseModel, HttpUrl  # Import HttpUrl for URL validation
 
 
 class Link(BaseModel):
@@ -12,6 +12,7 @@ class PetIn(BaseModel):
     type: str
     price: float
     breeder_id: str
+    image_url: Optional[HttpUrl] = None  # Add image_url as an optional field
 
 
 class PetOut(PetIn):
@@ -24,6 +25,7 @@ class PetUpdate(BaseModel):
     type: Optional[str] = None
     price: Optional[float] = None
     breeder_id: Optional[str] = None
+    image_url: Optional[HttpUrl] = None  # Allow updating the image_url
 
 
 class PetFilterParams(BaseModel):

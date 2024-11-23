@@ -4,8 +4,12 @@ from typing import Optional
 
 
 async def add_pet(payload: PetIn, pet_id: str):
-    query = pets.insert().values(id=pet_id, **payload.model_dump())
+    # Convert HttpUrl to str explicitly if it exists
+    payload_data = payload.model_dump()
+    if payload_data.get("image_url"):
+        payload_data["image_url"] = str(payload_data["image_url"])
 
+    query = pets.insert().values(id=pet_id, **payload_data)
     return await database.execute(query=query)
 
 
@@ -32,7 +36,12 @@ async def get_pet(id):
 
 
 async def update_pet(id: int, payload: PetIn):
-    query = pets.update().where(pets.c.id == id).values(**payload.model_dump())
+    # Convert HttpUrl to str explicitly if it exists
+    payload_data = payload.model_dump()
+    if payload_data.get("image_url"):
+        payload_data["image_url"] = str(payload_data["image_url"])
+
+    query = pets.update().where(pets.c.id == id).values(**payload_data)
     return await database.execute(query=query)
 
 
