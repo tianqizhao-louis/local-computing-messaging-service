@@ -157,9 +157,28 @@ async def delete_all_pets():
             status_code=500, detail=f"Failed to delete all pets: {str(e)}"
         )
 
+# get pets by breeder_id
+@pets.get("/breeder/{breeder_id}/", response_model=List[PetOut])
+async def get_pets_by_breeder(breeder_id: str):
+    pets = await db_manager.get_pets_by_breeder(breeder_id)
+    if not pets:
+        return []
+
+    # Include links for each pet in the response
+    response_data = [
+        PetOut(
+            id=pet["id"],
+            name=pet["name"],
+            type=pet["type"],
+            price=pet["price"],
+            breeder_id=pet["breeder_id"],
+            image_url=pet["image_url"],  # Include image_url from the database
+        )
+        for pet in pets
+    ]
+    return response_data
 
 #### Helper functions
-
 
 def generate_pet_url(pet_id: str):
     return f"{URL_PREFIX}/pets/{pet_id}/"

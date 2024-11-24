@@ -1,6 +1,8 @@
 from app.api.models import PetIn, PetOut
 from app.api.db import pets, database
 from typing import Optional
+from typing import List
+
 
 
 async def add_pet(payload: PetIn, pet_id: str):
@@ -53,3 +55,7 @@ async def delete_pet(id: int):
 async def delete_all_pets():
     query = pets.delete()
     return await database.execute(query=query)
+
+async def get_pets_by_breeder(breeder_id: str) -> List[dict]:
+    query = "SELECT * FROM pets WHERE breeder_id = :breeder_id"
+    return await database.fetch_all(query, values={"breeder_id": breeder_id})
