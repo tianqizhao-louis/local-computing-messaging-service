@@ -9,7 +9,7 @@ from contextvars import ContextVar
 from app.api.auth import verify_jwt_token
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("breeder-service")
+logger = logging.getLogger("pet-service")
 
 correlation_id = ContextVar("correlation_id", default=None)
 
