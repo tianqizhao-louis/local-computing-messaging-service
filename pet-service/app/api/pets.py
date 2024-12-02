@@ -9,7 +9,9 @@ from app.api.models import (
     PetFilterParams,
     PetUpdate,
 )
+from app.api.cat_api_adapter import CatAPIAdapter
 from app.api import db_manager
+from app.api.middleware import logger
 import uuid
 import os
 
@@ -26,6 +28,18 @@ async def create_pet(payload: PetIn, response: Response):
     #         raise HTTPException(status_code=404, detail=f"Cast with given id:{cast_id} not found")
 
     pet_id = str(uuid.uuid4())
+
+    if payload.image_url is None:
+        # Retrieve a random cat image from the Cat API
+        cat_api_adapter = CatAPIAdapter()
+
+        try:
+            cat_image_url = await cat_api_adapter.retrieve_image()
+            payload.image_url = cat_image_url
+        except Exception as e:
+            logger.warning(f"Failed to retrieve cat image from API: {str(e)}")
+            pass
+
     await db_manager.add_pet(payload, pet_id=pet_id)
 
     pet_url = generate_pet_url(pet_id=pet_id)
@@ -79,7 +93,10 @@ async def get_pets(params: PetFilterParams = Depends()):
     if params.limit:
         next_offset = params.offset + params.limit
         links.append(
-            Link(rel="next", href=f"{URL_PREFIX}/pets/?limit={params.limit}&offset={next_offset}")
+            Link(
+                rel="next",
+                href=f"{URL_PREFIX}/pets/?limit={params.limit}&offset={next_offset}",
+            )
         )
 
     return PetListResponse(
@@ -157,6 +174,7 @@ async def delete_all_pets():
             status_code=500, detail=f"Failed to delete all pets: {str(e)}"
         )
 
+
 # get pets by breeder_id
 @pets.get("/breeder/{breeder_id}/", response_model=List[PetOut])
 async def get_pets_by_breeder(breeder_id: str):
@@ -178,7 +196,9 @@ async def get_pets_by_breeder(breeder_id: str):
     ]
     return response_data
 
+
 #### Helper functions
+
 
 def generate_pet_url(pet_id: str):
     return f"{URL_PREFIX}/pets/{pet_id}/"
