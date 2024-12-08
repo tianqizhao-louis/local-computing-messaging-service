@@ -8,11 +8,12 @@ class Link(BaseModel):
 
 
 class PetIn(BaseModel):
+    id: Optional[str]
     name: str
     type: str
     price: float
     breeder_id: str
-    image_url: Optional[HttpUrl] = None  # Add image_url as an optional field
+    image_url: Optional[str] = None  # Add image_url as an optional field
 
 
 class PetOut(PetIn):

@@ -7,7 +7,7 @@ from typing import List
 
 async def add_pet(payload: PetIn, pet_id: str):
     # Convert HttpUrl to str explicitly if it exists
-    payload_data = payload.model_dump()
+    payload_data = payload.model_dump(exclude={"id"})
     if payload_data.get("image_url"):
         payload_data["image_url"] = str(payload_data["image_url"])
 

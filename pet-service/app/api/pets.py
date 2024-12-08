@@ -26,8 +26,7 @@ async def create_pet(payload: PetIn, response: Response):
     # for cast_id in payload.casts_id:
     #     if not is_cast_present(cast_id):
     #         raise HTTPException(status_code=404, detail=f"Cast with given id:{cast_id} not found")
-
-    pet_id = str(uuid.uuid4())
+    pet_id = payload.id if payload.id else str(uuid.uuid4())
 
     if payload.image_url is None:
         # Retrieve a random cat image from the Cat API
@@ -39,7 +38,6 @@ async def create_pet(payload: PetIn, response: Response):
         except Exception as e:
             logger.warning(f"Failed to retrieve cat image from API: {str(e)}")
             pass
-
     await db_manager.add_pet(payload, pet_id=pet_id)
 
     pet_url = generate_pet_url(pet_id=pet_id)
