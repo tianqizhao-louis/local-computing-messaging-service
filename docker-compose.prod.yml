@@ -9,9 +9,16 @@ services:
     ports:
       - 8082:8000
     environment:
-      - DATABASE_URI=${DATABASE_URL}
+      - DEP_DATABASE_URI=${DEP_DATABASE_URI}
+      - DATABASE_URI=${DATABASE_URI}
       - PYTHONPATH=/app
       - URL_PREFIX=${URL_PREFIX}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
 
   nginx:
     image: nginx:latest
