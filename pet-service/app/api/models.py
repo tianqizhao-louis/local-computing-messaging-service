@@ -8,7 +8,7 @@ class Link(BaseModel):
 
 
 class PetIn(BaseModel):
-    id: Optional[str]
+    id: Optional[str] = None
     name: str
     type: str
     price: float
