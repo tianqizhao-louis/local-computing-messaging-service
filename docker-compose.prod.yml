@@ -1,0 +1,36 @@
+services:
+  pet_service:
+    build: 
+      context: ./pet-service
+      dockerfile: prod.Dockerfile
+    command: gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app -b 0.0.0.0:8000
+    # volumes:
+    #   - ./pet-service/:/app/
+    ports:
+      - 8082:8000
+    environment:
+      - DEP_DATABASE_URI=${DEP_DATABASE_URI}
+      - DATABASE_URI=${DATABASE_URI}
+      - PYTHONPATH=/app
+      - URL_PREFIX=${URL_PREFIX}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - CAT_API_KEY=${CAT_API_KEY}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx_config.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      # - movie_service
+      - pet_service
+
+# volumes:
+#   # postgres_data_movie:
+#   postgres_data_pet:

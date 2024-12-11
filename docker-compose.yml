@@ -1,0 +1,44 @@
+services:
+  pet_service:
+    build: ./pet-service
+    container_name: pet_microservice
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - ./pet-service/:/app/
+    ports:
+      - 8002:8000
+    environment:
+      - DATABASE_URI=${DATABASE_URL}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - CAT_API_KEY=${CAT_API_KEY}
+      - PYTHONPATH=/app
+      - URL_PREFIX=http://localhost:8082/api/v1
+    depends_on:
+      - pet_db
+
+  pet_db:
+    image: postgres:12.1-alpine
+    container_name: pet_db
+    volumes:
+      - postgres_data_pet:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=pet_db_username
+      - POSTGRES_PASSWORD=pet_db_password
+      - POSTGRES_DB=pet_db_dev
+
+  nginx:
+    image: nginx:latest
+    container_name: pet_nginx
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./nginx_config.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      # - movie_service
+      - pet_service
+
+volumes:
+  # postgres_data_movie:
+  postgres_data_pet:
